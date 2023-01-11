@@ -1,0 +1,26 @@
+{% extends 'news/base.html' %}
+{% load custom_tags %}
+{% load bad_words_filters %}
+<!-- Заголовок конкретной новости -->
+{% block title %}
+:{{ news.title}}
+{% endblock title %}
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+<h3><b>{{ news.title}}</b></h3>
+<h4>{% current_time '%b %d %Y' %}</h4>
+   <hr>
+<table>
+           <tr>
+               <td>Заголовок:</td>
+               <td>Дата публикации:</td>
+               <td>Текс статьи</td>
+
+           </tr>
+            <tr>
+               <td>{{ news.title }}</td>
+               <td>{{ news.date|date:'d M Y' }}</td>
+               <td>{{ news.text|bad_words }}</td>
+           </tr>
+       </table>
+{% endblock content %}
