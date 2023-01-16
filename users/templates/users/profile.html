@@ -1,0 +1,10 @@
+{% extends "news/base.html" %}
+{% block title %}
+:user:{{request.user.username}}
+{% endblock title %}
+{% block content %}
+<h2>Страница авторизованного пользователя {{request.user.username}}</h2>
+<div> Здесь может содержаться персональная информация для каждого пользователя </div>
+
+<button> <a href="/users/">Выйти</a> </button>
+{% endblock %}

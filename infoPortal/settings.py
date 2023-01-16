@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'news',
     'django_filters',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -137,6 +138,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGIN_URL = 'articles-main'
+
+LOGIN_REDIRECT_URL = 'articles-main'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")

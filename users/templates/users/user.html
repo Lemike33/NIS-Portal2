@@ -1,0 +1,22 @@
+{% extends "news/base.html" %}
+
+{% block content %}
+<h2> Войти в систему </h2>
+<form method="post" action="{% url 'user-input' %}">
+{% csrf_token %}
+<table>
+<tr>
+    <td>{{ form.username.label_tag }}</td>
+    <td>{{ form.username }}</td>
+</tr>
+<tr>
+    <td>{{ form.password.label_tag }}</td>
+    <td>{{ form.password }}</td>
+</tr>
+</table>
+
+<button type="submit" class="btn btn-outline-warning">Войти</button>
+<hr>
+<button type="submit" class="btn btn-outline-info"> Регистрация </button>
+</form>
+{% endblock %}

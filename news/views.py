@@ -4,10 +4,13 @@ from django.views.generic import (
     DetailView,
     CreateView,
     UpdateView,
-    DeleteView
+    DeleteView,
+    TemplateView,
 )
 from django.urls import reverse
 from django.urls import reverse_lazy
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from datetime import datetime
 from .models import Post
@@ -110,19 +113,25 @@ class CreatePostsView(CreateView):
             pass
 
 
-class UpdatePostView(UpdateView):
+class UpdatePostView(LoginRequiredMixin, UpdateView):
     model = Post
     template_name = "news/create_post.html"
     form_class = NewsForm
+    success_url = reverse_lazy('news-main')
 
     def get_absolute_url(self):
         return reverse('news-detail', args=[str(self.id)])
 
 
-class DeletePost(DeleteView):
+class DeletePost(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'news/post_delete.html'
+    #  url куда переправлять пользователя после успешного удаления товара.
     success_url = reverse_lazy('news-main')
+
+
+
+
 
 
 
