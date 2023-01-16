@@ -24,7 +24,7 @@ class ShowNewsView(ListView):
     ordering = ['-date']  # Поле, которое будет использоваться для сортировки объектов
     template_name = 'news/showNews.html'  # Указываем имя шаблона, в котором будут все инструкции о том, как именно пользователю должны быть показаны наши объекты
     context_object_name = 'news'  # Это имя списка, в котором будут лежать все объекты в HTML обращаемся к нему!!!
-    paginate_by = 4  # постраничный вывод, сколько объектов выводим на 1 страницу
+    paginate_by = 10  # постраничный вывод, сколько объектов выводим на 1 страницу
 
     # Метод get_context_data позволяет нам изменить набор данных,
     # который будет передан в шаблон.
@@ -56,7 +56,7 @@ class SearchNewsView(ListView):
     model = Post
     template_name = 'news/searchNews.html'
     context_object_name = 'news'
-    paginate_by = 2
+    paginate_by = 3
 
     # Переопределяем функцию получения списка новостей
     def get_queryset(self):
