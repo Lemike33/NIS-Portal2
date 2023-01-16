@@ -25,17 +25,21 @@
        <div class="collapse navbar-collapse" id="navbarResponsive">
            <ul class="navbar-nav ml-auto">
                <li class="nav-item active">
-                   <a class="nav-link" href="#">Home
+                   <a class="nav-link" href="{% url 'news-main' %}">Новости
+                       <span class="sr-only">(current)</span>
+                   </a>
+                   <a class="nav-link" href="{% url 'articles-main' %}">Статьи
                        <span class="sr-only">(current)</span>
                    </a>
                </li>
                <li class="nav-item">
-                   <a class="nav-link" href="#">About</a>
-               </li>
-               <li class="nav-item">
-                   <a class="nav-link" href="#">Contact</a>
+                   <a class="nav-link" href="{% url 'news-search' %}">Поиск</a>
                </li>
            </ul>
+           <div class="navbar-nav">
+               <a href="{% url 'articles-create' %}" class="btn btn-outline-secondary mr-3">Добавить статью</a>
+               <a href="{% url 'news-create' %}" class="btn btn-outline-secondary mr-3">Добавить новость</a>
+           </div>
        </div>
    </div>
 </nav>

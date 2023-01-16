@@ -1,0 +1,17 @@
+{% extends 'news/base.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+{% block title %}
+Удалить пост
+{% endblock %}
+
+{% block content %}
+<div class="form-section">
+    <h3>Вы точно хотите удалить статью "{{ object.title }}"?</h3>
+    <form method="POST">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-danger">Да, удалить</button>
+      <a href="{% url 'news-detail' object.id %}">Нет, отмена</a>
+    </form>
+  </div>
+{% endblock content %}

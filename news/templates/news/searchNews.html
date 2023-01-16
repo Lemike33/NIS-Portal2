@@ -1,21 +1,25 @@
 {% extends 'news/base.html' %}
 {% load custom_filters %}
-<!-- В контенте на странице мы выводим все товары -->
+{% load custom_tags %}
 {% block content %}
-   <h1>Все Новости</h1>
+   <h1>Поиск новостей</h1>
+
+   {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+   <form action="" method="get">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ filterset.form.as_p }}
+       {# Добавим кнопку отправки данных формы #}
+       <input type="submit" class="btn btn-outline-warning" value="Найти" />
+   </form>
    <hr>
-    <h3>{{ time_now|date:'M d Y' }}</h3>
-    <h5>Количество новостей на сайте: {{news|length}}</h5>
-    <hr>
-   {% if news %}
+    {% if news %}
        <table>
            <tr>
                <td>Название:</td>
                <td>Дата публикации:</td>
                <td>Текс статьи</td>
                <td>Рейтинг</td>
-               <td>Тип статьи</td>
-               <td>Читать полностью</td>
+               <td>Тип</td>
            </tr>
 
            <!-- Для каждого товара будете генерироваться новая строчка,
@@ -33,28 +37,18 @@
                <td>{{ new.text|truncatechars:20 }}</td>
                <td>{{ new.rating_post|currency:"score" }}</td>
                <td>{{ new.select }}</td>
-               {% if new.select == 'N'%}
-               <td><a href="{% url 'news-detail' new.id %}" class="btn btn-outline-warning">Читать новость целиком</a></td>
-               {% elif new.select == 'P'%}
-               <td><a href="{% url 'articles-detail' new.id %}" class="btn btn-outline-warning">Читать статью целиком</a></td>
-               {% else %}
-               <td> Неизвестный тип контекта </td>
-               {% endif %}
            </tr>
            {% endfor %}
 
        </table>
    {% else %}
-       <h2>Новостей пока нет!</h2>
-   {% endif %}
-    <hr>
-    <h3> {{ next_news|default_if_none:"Чуть позже появятся новые новости!" }} </h3>
-    {# Добавляем пагинацию на страницу #}
+ {% endif %}
+{# Добавляем пагинацию на страницу #}
 
    {% if is_paginated %}
       {% if page_obj.has_previous %}
-        <a href="?page=1" class="btn btn-outline-warning">Начало</a>
-        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-warning">Предыдущая</a>
+        <a href="?{% url_replace page=1 %}" class="btn btn-outline-warning">Начало</a>
+        <a href="?{% url_replace page=page_obj.previous_page_number %}" class="btn btn-outline-warning">Предыдущая</a>
       {% endif %}
 
       <!-- Начало Предыдущая 2 3 4 5 6 Следующая Последняя  -->
@@ -67,8 +61,9 @@
       {% endfor %}
 
       {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-warning">Следующая</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-warning">Последняя</a>
+        <a href="?{% url_replace page=page_obj.next_page_number %}" class="btn btn-outline-warning">Следующая</a>
+        <a href="?{% url_replace page=page_obj.paginator.num_pages %}" class="btn btn-outline-warning">Последняя</a>
       {% endif %}
     {% endif %}
+
 {% endblock content %}

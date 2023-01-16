@@ -1,3 +1,7 @@
+"""
+Описание:
+
+"""
 import re
 from django import template
 from ..resourses import BAD

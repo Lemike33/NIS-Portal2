@@ -15,12 +15,25 @@
                <td>Заголовок:</td>
                <td>Дата публикации:</td>
                <td>Текс статьи</td>
+               <td>Тип</td>
+               <td>Номер поста</td>
 
            </tr>
             <tr>
                <td>{{ news.title }}</td>
                <td>{{ news.date|date:'d M Y' }}</td>
                <td>{{ news.text|bad_words }}</td>
+                <td>{{ news.select}}</td>
+                <td>{{ news.id }}</td>
+                {% if news.select == 'N'%}
+                    <td><a href="{% url 'news-detail' news.id%}/update" class="btn btn-outline-info">Редактировать</a></td>
+                    <td><a href="{% url 'news-detail' news.id%}/delete" class="btn btn-outline-danger">Удалить</a></td>
+                {% elif news.select == 'P'%}
+                    <td><a href="{% url 'articles-detail' news.id%}/update" class="btn btn-outline-info">Редактировать</a></td>
+                    <td><a href="{% url 'articles-detail' news.id%}/delete" class="btn btn-outline-danger">Удалить</a></td>
+                {% else %}
+               <td> Неизвестный тип контекта </td>
+               {% endif %}
            </tr>
        </table>
 {% endblock content %}

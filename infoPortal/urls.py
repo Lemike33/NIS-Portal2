@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('news/', include('news.urls')),  # подключаем url адреса приложения news к основному проекту по префиксу /news/
+    path('posts/', include('news.urls')),  # подключаем url адреса приложения news к основному проекту по префиксу /news/
 ]

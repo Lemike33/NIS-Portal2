@@ -1,0 +1,16 @@
+{% extends 'news/base.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+{% block title %}
+Добавить пост
+{% endblock %}
+
+{% block content %}
+<form method="post" class="form-register">
+    {% csrf_token %}
+    {{ form.as_p }}
+     <button type="submit"  class="btn btn-outline-success">Добавить</button>
+</form>
+<hr>
+
+{% endblock content %}

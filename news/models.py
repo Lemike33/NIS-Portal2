@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.utils import timezone
 from .resourses import SELECT, post, news
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -69,6 +70,9 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.title}'
+
+    def get_absolute_url(self):
+        return reverse('news-detail', kwargs={'pk': self.pk})
 
 
 class PostCategory(models.Model):
