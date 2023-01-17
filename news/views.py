@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from datetime import datetime
 from .models import Post
@@ -87,11 +88,12 @@ class NewsDetailView(DetailView):
     context_object_name = 'news'
 
 
-class CreatePostsView(CreateView):
+class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     """ класс для создания веб-сервиса для добавления постов(новостей/статей) """
     model = Post
     template_name = "news/create_post.html"
     form_class = NewsForm
+    permission_required = ('news.add_post', 'news.change_post')
 
     def form_valid(self, form):
         """ Определяем чем является пост новостью или статьей в зависимости от пути страницы с которой он вызывается"""

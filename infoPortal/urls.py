@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('news.urls')),  # подключаем url адреса приложения news к основному проекту по префиксу /news/
     path('users/', include('users.urls')),
+    path('account/', include('allauth.urls')),
 ]
