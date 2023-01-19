@@ -142,4 +142,12 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
+# Для отправки писем email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'lemikes33@gmail.com'
+EMAIL_HOST_PASSWORD = 'vjmcbjntmssyjbie' # пароль приложений - доступен при подключенной двухфакторной аутентификации gmail
+
 ACCOUNT_FORMS = {'signup': 'users.forms.BasicSignupForm'}

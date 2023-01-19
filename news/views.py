@@ -9,9 +9,12 @@ from django.views.generic import (
 )
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.shortcuts import render, get_object_or_404, redirect
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
+
+from django.core.mail import send_mail
 
 from datetime import datetime
 from .models import Post
@@ -114,6 +117,20 @@ class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         else:
             pass
 
+    #  метод для отправки созданной статьи пользователю
+    def post(self, request, *args, **kwargs):
+        if request.method == "POST":
+            message = NewsForm(request.POST)
+            if message.is_valid():
+                message.save()
+                title = request.POST['title']
+                text = request.POST['text']
+                send_to = ["leshukovv87@mail.ru"]
+
+                send_mail(subject=title, message=text, from_email='lemikes33@gmail.com', recipient_list=send_to)
+
+        return redirect('/users')
+
 
 class UpdatePostView(LoginRequiredMixin, UpdateView):
     model = Post
@@ -132,6 +149,18 @@ class DeletePost(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('news-main')
 
 
+# def send(request):
+#     if request.method == "POST":
+#         message = NewsForm(request.POST)
+#         message.save()
+#         subject = message.cleaned_data.get('title')
+#         plain_message = message.cleaned_data.get('text')
+#         rating = message.cleaned_data.get('rating_post')
+#         to = "leshukovv87@mail.ru"
+#         file_silently = True
+#         send_mail(subject, plain_message, rating, [to], file_silently)
+#
+#         return redirect('/users')
 
 
 
