@@ -6,7 +6,6 @@ from .resourses import SELECT, post, news
 from django.urls import reverse
 
 
-
 class Author(models.Model):
     """Model including objects of all authors"""
     user = models.OneToOneField(User, verbose_name='Автор', on_delete=models.CASCADE)  # при удалении пользователя удаляться и все его статьи
