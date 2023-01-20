@@ -14,7 +14,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string  # импортируем функцию, которая срендерит наш html в текст
 
 from datetime import datetime
 from .models import Post
@@ -123,11 +124,36 @@ class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
             message = NewsForm(request.POST)
             if message.is_valid():
                 message.save()
+
                 title = request.POST['title']
                 text = request.POST['text']
+                author = request.POST['author']
                 send_to = ["leshukovv87@mail.ru"]
+                link = self.request.path
 
-                send_mail(subject=title, message=text, from_email='lemikes33@gmail.com', recipient_list=send_to)
+                # получаем наш html
+                html_content = render_to_string(
+                    'news/message_created.html',
+                    {
+                        'title': title,
+                        'text': text,
+                        'author': author,
+                        'link': link,
+
+                    }
+                )
+
+                msg = EmailMultiAlternatives(
+                    subject=title,
+                    body=text,  # это то же, что и message
+                    from_email='lemikes33@gmail.com',
+                    to=['leshukovv87@mail.ru'],  # это то же, что и recipients_list
+                )
+                msg.attach_alternative(html_content, "text/html")  # добавляем html
+
+                msg.send()  # отсылаем
+
+                # send_mail(subject=title, message=text, from_email='lemikes33@gmail.com', recipient_list=send_to)
 
         return redirect('/users')
 

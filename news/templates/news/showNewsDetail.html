@@ -14,6 +14,7 @@
            <tr>
                <td>Заголовок:</td>
                <td>Дата публикации:</td>
+               <td>Категория:</td>
                <td>Текс статьи</td>
                <td>Тип</td>
                <td>Номер поста</td>
@@ -22,6 +23,7 @@
             <tr>
                <td>{{ news.title }}</td>
                <td>{{ news.date|date:'d M Y' }}</td>
+                <td>{{ news.categories.category }}</td>
                <td>{{ news.text|bad_words }}</td>
                 <td>{{ news.select}}</td>
                 <td>{{ news.id }}</td>

@@ -12,6 +12,7 @@ class NewsForm(forms.ModelForm):
         #  там в зависимости от url ссылки подставляем в него Р - если пост, N - если статья!
         fields = [
             'author',
+            'categories',
             'title',
             'text',
             'rating_post',
