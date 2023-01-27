@@ -1,11 +1,14 @@
 {% extends 'news/base.html' %}
 {% load custom_filters %}
+{% load cache %}
 <!-- В контенте на странице мы выводим все товары -->
 {% block content %}
    <h1>Все Новости</h1>
    <hr>
     <h3>{{ time_now|date:'M d Y' }}</h3>
+    {% cache 200 post_count %}
     <h5>Количество новостей на сайте: {{news|length}}</h5>
+    {% endcache %}
     <hr>
    {% if news %}
        <table>

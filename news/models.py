@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.utils import timezone
 from .resourses import SELECT, post, news
 from django.urls import reverse
@@ -16,7 +16,22 @@ class Author(models.Model):
         verbose_name_plural = 'Авторы'
 
     def update_rating(self):
-        pass
+        # суммарный рейтинг каждой статьи автора умножается на 3
+        # posts - это связанное поле из класса Post полученное через related_name поля author модели Post
+
+        sum_rating_post = self.posts.aggregate(result=Sum('rating_post')).get('result')
+
+        # суммарный рейтинг всех комментариев автора
+        author_comments = self.user.comments_users.filter(user_id=self.user)
+        count_comment = 0
+        for com in author_comments:
+            count_comment += com.rating_comment
+
+        # суммарный рейтинг всех чужих комментариев к статьям автора
+
+        self.rating_author = sum_rating_post * 3 + count_comment
+        self.save()
+        return self.rating_author
 
     def __str__(self):
         return f'{self.user}'
@@ -25,6 +40,7 @@ class Author(models.Model):
 class Category(models.Model):
     """Themes of news"""
     category_name = models.CharField(unique=True, max_length=50, verbose_name='Уникальная тема')
+    subscribers = models.ManyToManyField(User, through='CategoryUser')
 
     class Meta:
         verbose_name = 'Категория'
@@ -39,7 +55,8 @@ class Post(models.Model):
     post = 'P'
     news = 'N'
 
-    author = models.ForeignKey(Author, verbose_name='Автор', on_delete=models.CASCADE)
+    # related_name='posts' - для связи с моделью Author, что бы можно было из модели Author видеть посты этого автора
+    author = models.ForeignKey(Author, verbose_name='Автор', on_delete=models.CASCADE, related_name='posts')
     select = models.CharField('Статья/Новость', max_length=10, choices=SELECT, default=post)
     date = models.DateTimeField('Дата', default=timezone.now)
     categories = models.ManyToManyField(Category, through='PostCategory')
@@ -86,8 +103,8 @@ class PostCategory(models.Model):
 
 class Comment(models.Model):
     """Comment storage model"""
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments_posts')  # связь один ко многим
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments_users')
     text = models.TextField('Основной текст комментария')
     date_created = models.DateTimeField('Дата', default=timezone.now)
     rating_comment = models.IntegerField(default=0)
@@ -107,6 +124,17 @@ class Comment(models.Model):
             self.save()
         return self.rating_comment
 
+    def __str__(self):
+        return f'Комментарий к посту: -  "{self.post}" от автора: - "{self.user}"'
+
+
+class CategoryUser(models.Model):
+    """ Класс для связи многие-ко-многим категории/пользователи """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user} - {self.category}'
 
 
 

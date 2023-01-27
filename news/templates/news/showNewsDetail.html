@@ -18,6 +18,8 @@
                <td>Текс статьи</td>
                <td>Тип</td>
                <td>Номер поста</td>
+               <td> Категория </td>
+
 
            </tr>
             <tr>
@@ -27,6 +29,7 @@
                <td>{{ news.text|bad_words }}</td>
                 <td>{{ news.select}}</td>
                 <td>{{ news.id }}</td>
+                <td>{{ post_cat }}</td>
                 {% if news.select == 'N'%}
                     <td><a href="{% url 'news-detail' news.id%}/update" class="btn btn-outline-info">Редактировать</a></td>
                     <td><a href="{% url 'news-detail' news.id%}/delete" class="btn btn-outline-danger">Удалить</a></td>
@@ -36,6 +39,8 @@
                 {% else %}
                <td> Неизвестный тип контекта </td>
                {% endif %}
+                <td><a href="#" class="btn btn-outline-info">Подписаться</a></td>
+                <p>Страницу смотрит пользователь {{ auth_user }}</p>
            </tr>
        </table>
 {% endblock content %}

@@ -1,4 +1,6 @@
 import logging
+from django.http import HttpResponse
+from django.views import View
 from django.views.generic import (
     ListView,
     DetailView,
@@ -18,9 +20,10 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string  # импортируем функцию, которая срендерит наш html в текст
 
 from datetime import datetime
-from .models import Post
+from .models import Post, CategoryUser
 from .filters import NewsFilter
 from .forms import NewsForm
+from .tasks import sending_posts_on_schedule
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +37,7 @@ class ShowNewsView(ListView):
     context_object_name = 'news'  # Это имя списка, в котором будут лежать все объекты в HTML обращаемся к нему!!!
     paginate_by = 10  # постраничный вывод, сколько объектов выводим на 1 страницу
 
-    # Метод get_context_data позволяет нам изменить набор данных,
+    # Метод get_context_data позволяет нам изменить набор данных(например добавить новые time_now, next_news),
     # который будет передан в шаблон.
     def get_context_data(self, **kwargs):
         # С помощью super() мы обращаемся к родительским классам
@@ -50,7 +53,9 @@ class ShowNewsView(ListView):
         context['next_news'] = 'Ожидайте новые новости'
         return context
 
+    # переопределяем функцию получения набра данных из модели
     def get_queryset(self):
+        # это обычный запрос
         if 'news' in self.request.path:
             self.queryset = super().get_queryset().filter(select='N')
             return self.queryset
@@ -91,6 +96,18 @@ class NewsDetailView(DetailView):
     template_name = 'news/showNewsDetail.html'
     context_object_name = 'news'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # находим категорию текущего поста
+        post_cat = Post.objects.get(pk=self.kwargs['pk']).categories.values('category_name').get()
+        context['post_cat'] = post_cat.get('category_name')
+
+        # определяем текущего пользователя
+        auth_user = self.request.user
+        context['auth_user'] = auth_user
+
+        return context
+
 
 class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     """ класс для создания веб-сервиса для добавления постов(новостей/статей) """
@@ -103,12 +120,15 @@ class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         """ Определяем чем является пост новостью или статьей в зависимости от пути страницы с которой он вызывается"""
         post = form.save(commit=False)
         # если путь такой: http://127.0.0.1:8000/posts/news/create то выбираем, что это новость
-        if 'news' in self.request.path:
+        if 'news' in self.request.path.split('/'):
             post.select = 'N'
-            return super().form_valid(form)
+            post.save()
+            # return super().form_valid(form)
         else:
             post.select = 'P'
-            return super().form_valid(form)
+            post.save()
+            # return super().form_valid(form)
+        return super().form_valid(form)
 
     def get_absolute_url(self):
         if 'news' in self.request.path:
@@ -146,7 +166,7 @@ class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
                 msg = EmailMultiAlternatives(
                     subject=title,
                     body=text,  # это то же, что и message
-                    from_email='lemikes33@gmail.com',
+                    from_email='lemikes33@yandex.ru',
                     to=['leshukovv87@mail.ru'],  # это то же, что и recipients_list
                 )
                 msg.attach_alternative(html_content, "text/html")  # добавляем html
@@ -173,6 +193,31 @@ class DeletePost(LoginRequiredMixin, DeleteView):
     template_name = 'news/post_delete.html'
     #  url куда переправлять пользователя после успешного удаления товара.
     success_url = reverse_lazy('news-main')
+
+
+class AddFavoriteCategory(LoginRequiredMixin, TemplateView):
+    model = CategoryUser
+    template_name = 'news/showNewsDetail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        return context
+
+    def test(self):
+        self.cats = self.CategoryUser.objects.filter(user=1)
+        for cat in self.cats:
+            print(cat)
+
+
+class IndexView(View):
+    def get(self, request):
+
+        return HttpResponse('Hello!')
+
+
+
 
 
 # def send(request):

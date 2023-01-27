@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django_extensions',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -50,6 +51,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # 3 приложения кля полного кэширования сайта, в динамическом сайте так лучше не делать
+    # 'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'infoPortal.urls'
@@ -105,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -117,7 +123,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/accounts/login/'
-DEFAULT_FROM_EMAIL = 'lemikes33@gmail.com'  # здесь указываем уже свою ПОЛНУЮ почту, с которой будут отправляться письма
+
+# DEFAULT_FROM_EMAIL = 'lemikes33@yandex.ru'  # здесь указываем уже свою ПОЛНУЮ почту, с которой будут отправляться письма
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = 'articles-main'
@@ -138,13 +145,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Для отправки писем email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'lemikes33@gmail.com'
-EMAIL_HOST_PASSWORD = 'vjmcbjntmssyjbie'  # пароль приложений - доступен при подключенной двухфакторной аутентификации gmail
+EMAIL_HOST_USER = 'lemikes33'
+EMAIL_HOST_PASSWORD = 'Vannistelroy+33'  # пароль приложений - доступен при подключенной двухфакторной аутентификации gmail
 
 ACCOUNT_FORMS = {'signup': 'users.forms.BasicSignupForm'}
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SERVER_EMAIL = 'lemikes33@gmail.com'  # это будет у нас вместо аргумента FROM в массовой рассылке
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
+SERVER_EMAIL = 'lemikes33@yandex.ru'  # это будет у нас вместо аргумента FROM в массовой рассылке
+
+# Кэширование
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+        # Указываем, куда будем сохранять кэшируемые файлы!создаем папку cache_files внутри проекта,
+        # там где и manage.py!
+    }
+}
+
+#  Запусти redis в power_shell: redis-server
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
