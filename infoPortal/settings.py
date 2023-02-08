@@ -23,6 +23,109 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+# D16.4 LOGGING
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    #  Формы записи сообщений
+    'formatters': {
+        'message_debug': {
+            'format': 'время события:{asctime} - уровень:{levelname} - сообщение:{message}',
+            'style': '{',
+        },
+        'time_level_path_message': {
+            'format': 'время события:{asctime} - уровень:{levelname} - сообщение:{message} - путь:{pathname}',
+            'style': '{',
+        },
+        'time_level_path_message_exc': {
+            'format': 'время события:{asctime} - уровень:{levelname} - сообщение:{message} - путь:{pathname}: стэк ошибки:{exc_info}',
+            'style': '{',
+        },
+        'general_log': {
+            'format': 'время события:{asctime} - уровень:{levelname} - модуль:{module} - сообщение:{message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'message_debug',
+        },
+        'console_W': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'time_level_path_message',
+        },
+        'console_E': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'time_level_path_message_exc',
+        },
+        'general_log': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filters': ['require_debug_false'],
+            'filename': 'general.log',
+            'formatter': 'general_log',
+        },
+        'errors_log': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'time_level_path_message_exc',
+        },
+        'security_log': {
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'general_log',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false'],
+            'formatter': 'time_level_path_message',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'console_W', 'console_E', 'general_log'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['errors_log', 'mail_admins'],
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['errors_log', 'mail_admins'],
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['errors_log'],
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['errors_log'],
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['security_log'],
+            'propagate': True,
+        },
+    }
+}
+
 # Application definition
 
 INSTALLED_APPS = [
