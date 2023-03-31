@@ -1,4 +1,3 @@
-import logging
 from django.http import HttpResponse
 from django.views import View
 from django.views.generic import (
@@ -23,11 +22,6 @@ from datetime import datetime
 from .models import Post, CategoryUser
 from .filters import NewsFilter
 from .forms import NewsForm
-
-from django.utils.translation import gettext as _
-
-
-logger = logging.getLogger(__name__)
 
 
 class ShowNewsView(ListView):
