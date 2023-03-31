@@ -1,17 +1,10 @@
-
 from django import forms
-from django_filters import *
+from django_filters import FilterSet, DateFilter, CharFilter
 from .models import Post
-from .resourses import SELECT
-
-# Создаем свой набор фильтров для модели Post.
-# FilterSet, который мы наследуем,
-# должен чем-то напомнить знакомые вам Django дженерики.
-# class NewsFilter(FilterSet):
 
 
 class NewsFilter(FilterSet):
-    """ """
+    """Set of filters for the model Post."""
 
     # это поле date, оно тоже выведется в форму, использую виджет DateTime с атрибутами, type=date -
     # создает поле типа <input type='date' - выводит календарь

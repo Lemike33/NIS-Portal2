@@ -11,26 +11,27 @@ from django.views.generic import (
 )
 from django.urls import reverse
 from django.urls import reverse_lazy
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from django.core.mail import send_mail, EmailMultiAlternatives
-from django.template.loader import render_to_string  # импортируем функцию, которая срендерит наш html в текст
+from django.template.loader import render_to_string
 
 from datetime import datetime
 from .models import Post, CategoryUser
 from .filters import NewsFilter
 from .forms import NewsForm
-from .tasks import sending_posts_on_schedule
+
+from django.utils.translation import gettext as _
 
 
 logger = logging.getLogger(__name__)
 
 
 class ShowNewsView(ListView):
-    """ """
+    """List of all posts with pagination."""
     model = Post  # Указываем модель, объекты которой мы будем выводить
     ordering = ['-date']  # Поле, которое будет использоваться для сортировки объектов
     template_name = 'news/showNews.html'  # Указываем имя шаблона, в котором будут все инструкции о том, как именно пользователю должны быть показаны наши объекты
@@ -55,7 +56,6 @@ class ShowNewsView(ListView):
 
     # переопределяем функцию получения набра данных из модели
     def get_queryset(self):
-        # это обычный запрос
         if 'news' in self.request.path:
             self.queryset = super().get_queryset().filter(select='N')
             return self.queryset
@@ -65,7 +65,7 @@ class ShowNewsView(ListView):
 
 
 class SearchNewsView(ListView):
-    """ Класс для поиска новостей по фильтрам """
+    """Search for posts by selected filters."""
     model = Post
     template_name = 'news/searchNews.html'
     context_object_name = 'news'
@@ -73,7 +73,6 @@ class SearchNewsView(ListView):
 
     # Переопределяем функцию получения списка новостей
     def get_queryset(self):
-        # Получаем обычный запрос
         queryset = super().get_queryset()
         # Используем наш класс фильтрации.
         # self.request.GET содержит объект QueryDict, который мы рассматривали
@@ -92,6 +91,7 @@ class SearchNewsView(ListView):
 
 
 class NewsDetailView(DetailView):
+    """Displaying detailed information for each post."""
     model = Post
     template_name = 'news/showNewsDetail.html'
     context_object_name = 'news'
@@ -117,17 +117,15 @@ class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     permission_required = ('news.add_post', 'news.change_post')
 
     def form_valid(self, form):
-        """ Определяем чем является пост новостью или статьей в зависимости от пути страницы с которой он вызывается"""
+        """Select event type post or news."""
         post = form.save(commit=False)
         # если путь такой: http://127.0.0.1:8000/posts/news/create то выбираем, что это новость
         if 'news' in self.request.path.split('/'):
             post.select = 'N'
             post.save()
-            # return super().form_valid(form)
         else:
             post.select = 'P'
             post.save()
-            # return super().form_valid(form)
         return super().form_valid(form)
 
     def get_absolute_url(self):
@@ -140,6 +138,7 @@ class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
 
     #  метод для отправки созданной статьи пользователю
     def post(self, request, *args, **kwargs):
+        """Method to send created article to user."""
         if request.method == "POST":
             message = NewsForm(request.POST)
             if message.is_valid():
@@ -165,15 +164,13 @@ class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
 
                 msg = EmailMultiAlternatives(
                     subject=title,
-                    body=text,  # это то же, что и message
+                    body=text,
                     from_email='lemikes33@yandex.ru',
-                    to=['leshukovv87@mail.ru'],  # это то же, что и recipients_list
+                    to=['leshukovv87@mail.ru'],
                 )
                 msg.attach_alternative(html_content, "text/html")  # добавляем html
 
-                msg.send()  # отсылаем
-
-                # send_mail(subject=title, message=text, from_email='lemikes33@gmail.com', recipient_list=send_to)
+                msg.send()
 
         return redirect('/users')
 
@@ -211,27 +208,9 @@ class AddFavoriteCategory(LoginRequiredMixin, TemplateView):
             print(cat)
 
 
-class IndexView(View):
-    def get(self, request):
-
-        return HttpResponse('Hello!')
 
 
 
-
-
-# def send(request):
-#     if request.method == "POST":
-#         message = NewsForm(request.POST)
-#         message.save()
-#         subject = message.cleaned_data.get('title')
-#         plain_message = message.cleaned_data.get('text')
-#         rating = message.cleaned_data.get('rating_post')
-#         to = "leshukovv87@mail.ru"
-#         file_silently = True
-#         send_mail(subject, plain_message, rating, [to], file_silently)
-#
-#         return redirect('/users')
 
 
 

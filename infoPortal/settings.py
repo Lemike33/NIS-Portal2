@@ -7,11 +7,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^y!3b=14my@$3^78*d%2%l$op-h)@wk5-9-q=z)tp25ffnp80i'
+# Чтение SECRET_KEY из переменной окружения
+# SECRET_KEY = 'django-insecure-^y!3b=14my@$3^78*d%2%l$op-h)@wk5-9-q=z)tp25ffnp80i'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-^y!3b=14my@$3^78*d%2%l$op-h)@wk5-9-q=z)tp25ffnp80i')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+
+DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 
 ALLOWED_HOSTS = []
 
@@ -23,7 +26,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# D16.4 LOGGING
+# LOGGING Settings
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -155,10 +158,18 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'django.middleware.locale.LocaleMiddleware',
+
+    'news.middlewares.TimezoneMiddleware',
+
     # 3 приложения кля полного кэширования сайта, в динамическом сайте так лучше не делать
     # 'django.middleware.cache.UpdateCacheMiddleware',
     # 'django.middleware.common.CommonMiddleware',
     # 'django.middleware.cache.FetchFromCacheMiddleware',
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
 ]
 
 ROOT_URLCONF = 'infoPortal.urls'
@@ -216,7 +227,7 @@ LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = True  # Интернализация
 
 USE_TZ = True
 
