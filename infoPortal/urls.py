@@ -19,7 +19,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('news.urls')),  # подключаем url адреса приложения news к основному проекту по префиксу /news/
-    path('users/', include('users.urls')),
+    path('', include('users.urls')),
     path('accounts/', include('allauth.urls')),
     path('news/', include(('news.urls', 'news'), namespace='news')),
 ]

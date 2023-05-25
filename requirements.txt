@@ -29,6 +29,7 @@ Pillow==9.4.0
 prompt-toolkit==3.0.36
 pycparser==2.21
 PyJWT==2.6.0
+python-dotenv==1.0.0
 python3-openid==3.2.0
 pytz==2022.7.1
 pytz-deprecation-shim==0.1.0.post0

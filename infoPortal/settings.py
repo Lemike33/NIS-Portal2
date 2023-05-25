@@ -1,6 +1,11 @@
 import os
 from pathlib import Path
 
+from os.path import join, dirname
+from dotenv import load_dotenv
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -8,10 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # Чтение SECRET_KEY из переменной окружения
-# SECRET_KEY = 'django-insecure-^y!3b=14my@$3^78*d%2%l$op-h)@wk5-9-q=z)tp25ffnp80i'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-^y!3b=14my@$3^78*d%2%l$op-h)@wk5-9-q=z)tp25ffnp80i')
 
-# SECURITY WARNING: don't run with debug turned on in production!
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
 # DEBUG = True
 
 DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
@@ -263,7 +267,7 @@ EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'lemikes33'
-EMAIL_HOST_PASSWORD = 'Vannistelroy+33'  # пароль приложений - доступен при подключенной двухфакторной аутентификации gmail
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 ACCOUNT_FORMS = {'signup': 'users.forms.BasicSignupForm'}
 

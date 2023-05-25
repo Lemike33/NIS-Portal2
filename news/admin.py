@@ -16,8 +16,10 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('author', 'select', 'date', 'rating_post')
-    list_filter = ('author', 'date')
+    list_filter = ('author', 'date', 'rating_post')
     fields = ['author', 'date', ('select', 'rating_post')]
+    list_display_links = ('rating_post', 'author', 'date')
+    search_fields = ('categories',)
 
 
 @admin.register(Comment)

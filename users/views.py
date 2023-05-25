@@ -20,7 +20,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 class BaseRegisterView(CreateView):
     model = User
     form_class = BaseRegisterForm
-    success_url = '/'
+    success_url = '/users'
 
 
 @login_required

@@ -166,7 +166,7 @@ class CreatePostsView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
 
                 msg.send()
 
-        return redirect('/users')
+        return redirect('/posts/news/')
 
 
 class UpdatePostView(LoginRequiredMixin, UpdateView):
